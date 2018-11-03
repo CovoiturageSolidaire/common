@@ -32,7 +32,9 @@ npm install -g generator-jhipster-ionic
 yo jhipster-ionic
 ```
 
+
 ```bash
+cd app-ionic
 yo jhipster-ionic:entity Place
 yo jhipster-ionic:entity Person
 yo jhipster-ionic:entity Car
