@@ -40,3 +40,8 @@ yo jhipster-ionic:entity Driver
 yo jhipster-ionic:entity Sponsor
 yo jhipster-ionic:entity Request
 ```
+
+
+```bash
+ionic serve
+```
