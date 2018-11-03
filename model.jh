@@ -5,6 +5,8 @@ application {
     packageName io.github.covsol.backend
     languages 	[en, fr]
     searchEngine true
+    clientPackageManager yarn
+    useSass true
   }
   entities *
 }
@@ -111,8 +113,9 @@ relationship ManyToOne {
 }
 
 relationship OneToOne {
-    Place{from} to Request,
-    Place{to} to Request
+    Request{requestedBy} to Person,
+    Request{from} to Place,
+    Request{to} to Place
 }
 
 paginate Person with pagination
