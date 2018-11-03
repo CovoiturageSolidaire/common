@@ -1,0 +1,129 @@
+application {
+  config {
+    baseName covoituragesolidaire
+    applicationType monolith
+    packageName io.github.covsol.backend
+    languages 	[en, fr]
+    searchEngine true
+  }
+  entities *
+}
+
+TOKEN_LENGTH = 16
+
+entity Person {
+  /** The name */
+  name String required,
+
+  /** The creation date */
+  createdAt Instant required,
+  /** The last update date */
+  updatedAt Instant required
+}
+
+entity Sponsor {
+  /** The name */
+  name String required,
+
+  /** The creation date */
+  createdAt Instant required,
+  /** The last update date */
+  updatedAt Instant required
+}
+
+
+entity Driver {
+  /** The name */
+  name String required,
+
+  /** The driving license */
+  drivingLicense ImageBlob required,
+
+  /** The creation date */
+  createdAt Instant required,
+  /** The last update date */
+  updatedAt Instant required
+}
+
+entity Car {
+  /** The model */
+  model String required,
+  /** The model */
+  brand String required,
+  /** The license plate */
+  licensePlate String required,
+
+  /** The car document (ie carte grise in France) */
+  carDocument ImageBlob required,
+
+  /** The insurance company */
+  insuranceCompany String required,
+  /** The insurance number (ie numéro de police d'assurance) */
+  insuranceNumber String required,
+  /** The insurance document (ie carte verte in France) */
+  insuranceDocument ImageBlob required,
+  /** The insurance document deadline */
+  insuranceDocumentDate Instant required,
+
+  /** The creation date */
+  createdAt Instant required,
+  /** The last update date */
+  updatedAt Instant required
+}
+
+entity Place {
+  /** The name */
+  name String required,
+  /** The address */
+  address String required,
+  /** The city */
+  city String required,
+  /** The postal code  */
+  postCode String required,
+
+  /** The latitude of the address */
+  latitude Float min(-90) max(90),
+  /** The longitude of the address */
+  longitude Float min(-180) max(180),
+  /** The altitude of the device */
+  altitude Integer
+}
+
+entity Request {
+  /** The creation date */
+  dateTo Instant required,
+
+  /** The creation date */
+  createdAt Instant required,
+  /** The last update date */
+  updatedAt Instant required
+}
+
+relationship ManyToOne {
+    Place{liveAt} to Person,
+    Place{liveAt} to Driver,
+    Person{attachedTo(login)} to User,
+    Driver{attachedTo(login)} to User,
+    Sponsor{sponsor} to Person,
+    Sponsor{attachedTo(login)} to User,
+    Car{drivenBy(login)} to User,
+    Car{ownedBy(login)} to User
+}
+
+relationship OneToOne {
+    Place{from} to Request,
+    Place{to} to Request
+}
+
+paginate Person with pagination
+paginate Sponsor with pagination
+paginate Driver with pagination
+paginate Car with pagination
+paginate Request with pagination
+
+dto * with mapstruct
+service all with serviceImpl
+//angularSuffix * with covsol
+//microservice * with covsol
+search * with elasticsearch
+filter *
