@@ -52,8 +52,16 @@ entity Car {
   model String required,
   /** The model */
   brand String required,
+  /** The number of seats for passengers */
+  numberOfSeatsForPassengers Integer required min(1),
+  /** The number of seats for disabled passengers */
+  numberOfSeatsForDisabledPassengers Integer required min(0),
+
   /** The license plate */
   licensePlate String required,
+
+  /** The owner note */
+  note TextBlob,
 
   /** The car document (ie carte grise in France) */
   carDocument ImageBlob required,
@@ -76,7 +84,7 @@ entity Car {
 entity Place {
   /** The name */
   name String required,
-  /** The address */
+  /** The address (from Base Adresse Nationale) */
   address String required,
   /** The city */
   city String required,
@@ -92,7 +100,7 @@ entity Place {
 }
 
 entity Request {
-  /** The creation date */
+  /** The deadline date for the travel destination */
   dateTo Instant required,
 
   /** The creation date */
@@ -100,6 +108,61 @@ entity Request {
   /** The last update date */
   updatedAt Instant required
 }
+
+enum TravelStatus {
+  PROPOSED, BOOKED, CANCELED, IN_PROGRESS, COMPLETED
+}
+
+entity Travel {
+  /** The starting date */
+  status TravelStatus required,
+  /** The starting date */
+  startAt Instant,
+  /** The end date */
+  endAt Instant,
+  /** The distance */
+  distance Integer,
+
+  /** The creation date */
+  createdAt Instant required,
+  /** The last update date */
+  updatedAt Instant required
+}
+
+entity Travel {
+  /** The starting date */
+  status TravelStatus required,
+  /** The starting date */
+  startAt Instant,
+  /** The end date */
+  endAt Instant,
+  /** The distance */
+  distance Integer,
+
+  /** The driver rating */
+  driverRating Integer min(1) max(5),
+  /** The passengers rating (TODO Rating should be a entity) */
+  passengersRating Integer min(1) max(5),
+
+  /** The creation date */
+  createdAt Instant required,
+  /** The last update date */
+  updatedAt Instant required
+}
+
+entity Rating {
+  /** The rating */
+  rating Integer required min(1) max(5),
+
+  /** The comment */
+  comment TextBlob,
+
+  /** The creation date */
+  createdAt Instant required,
+  /** The last update date */
+  updatedAt Instant required
+}
+
 
 relationship ManyToOne {
     Place{liveAt} to Person,
@@ -109,13 +172,24 @@ relationship ManyToOne {
     Sponsor{sponsor} to Person,
     Sponsor{attachedTo(login)} to User,
     Car{drivenBy(login)} to User,
-    Car{ownedBy(login)} to User
+    Car{ownedBy(login)} to User,
+    Rating{person} to Person
+}
+
+relationship ManyToMany {
+  Travel{passengers} to Person
 }
 
 relationship OneToOne {
     Request{requestedBy} to Person,
     Request{from} to Place,
-    Request{to} to Place
+    Request{to} to Place,
+    Travel{drivenBy} to Driver,
+    Travel{drivenWith} to Car,
+    Travel{from} to Place,
+    Travel{to} to Place,
+    Rating{driver} to Driver,
+    Travel to Rating
 }
 
 paginate Person with pagination
@@ -123,6 +197,8 @@ paginate Sponsor with pagination
 paginate Driver with pagination
 paginate Car with pagination
 paginate Request with pagination
+paginate Travel with pagination
+paginate Rating with infinite-scroll
 
 dto * with mapstruct
 service all with serviceImpl
